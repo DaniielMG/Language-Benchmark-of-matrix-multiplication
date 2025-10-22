@@ -1,3 +1,4 @@
+
 public class MatrixMultiplicationTest {
 
     public static void main(String[] args) {
@@ -5,34 +6,52 @@ public class MatrixMultiplicationTest {
         int runsPerSize = 5;
 
         for (int size : matrixSizes) {
-            System.out.println("=== Tamaño de Matriz: " + size + "x" + size + " ===");
+            System.out.println("=== Matrix Size: " + size + "x" + size + " ===");
             double totalTime = 0.0;
             long totalMemory = 0;
 
             for (int run = 1; run <= runsPerSize; run++) {
+                // Assuming MatrixMultiplication is the production class
                 MatrixMultiplication mm = new MatrixMultiplication(size);
                 mm.initializeMatrices();
-                long memoryBefore = getUsedMemory();
+                
+                // --- Time and Memory Measurement ---
+                // The memory measurement here is only a rough estimation 
+                // and not a professional benchmark metric like JMH would provide.
+                long memoryBefore = getUsedMemory(); 
                 long startTime = System.nanoTime();
-                mm.multiply();
+                
+                // Production code call
+                mm.multiply(); 
+                
                 long endTime = System.nanoTime();
                 long memoryAfter = getUsedMemory();
-                double elapsedTime = (endTime - startTime) / 1e9;
+                
+                double elapsedTime = (endTime - startTime) / 1e9; 
                 totalTime += elapsedTime;
-                long memoryUsed = (memoryAfter - memoryBefore) / (1024 * 1024);
-                totalMemory += memoryUsed;
-                System.out.printf("Ejecución %d: Tiempo = %.3f segundos, Memoria Usada = %d MB%n",
-                        run, elapsedTime, memoryUsed);
+                
+                // Calculate memory difference in MB (1024*1024 bytes)
+                // Note: Memory measurement in Java is complex due to the Garbage Collector.
+                long memoryUsedBytes = (memoryAfter - memoryBefore); 
+                double memoryUsedMB = memoryUsedBytes / (1024.0 * 1024.0);
+                totalMemory += memoryUsedBytes;
+                
+                System.out.printf("Run %d: Time = %.3f seconds, Memory Used = %.2f MB%n",
+                        run, elapsedTime, memoryUsedMB);
             }
+            
             double averageTime = totalTime / runsPerSize;
-            double averageMemory = (double) totalMemory / runsPerSize;
-            System.out.printf("Promedio: Tiempo = %.3f segundos, Memoria Promedio Usada = %.2f MB%n%n",
-                    averageTime, averageMemory);
+            double averageMemoryMB = (totalMemory / runsPerSize) / (1024.0 * 1024.0);
+            
+            System.out.printf("Average: Time = %.3f seconds, Average Memory Used = %.2f MB%n%n",
+                    averageTime, averageMemoryMB);
         }
     }
 
     private static long getUsedMemory() {
         Runtime runtime = Runtime.getRuntime();
+        // Request garbage collection for a slightly more accurate "before" state
+        runtime.gc(); 
         return runtime.totalMemory() - runtime.freeMemory();
     }
 }
