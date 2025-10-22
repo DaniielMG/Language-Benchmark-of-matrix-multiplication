@@ -11,17 +11,13 @@ public class MatrixMultiplicationTest {
             long totalMemory = 0;
 
             for (int run = 1; run <= runsPerSize; run++) {
-                // Assuming MatrixMultiplication is the production class
                 MatrixMultiplication mm = new MatrixMultiplication(size);
                 mm.initializeMatrices();
                 
                 // --- Time and Memory Measurement ---
-                // The memory measurement here is only a rough estimation 
-                // and not a professional benchmark metric like JMH would provide.
                 long memoryBefore = getUsedMemory(); 
                 long startTime = System.nanoTime();
                 
-                // Production code call
                 mm.multiply(); 
                 
                 long endTime = System.nanoTime();
@@ -30,8 +26,6 @@ public class MatrixMultiplicationTest {
                 double elapsedTime = (endTime - startTime) / 1e9; 
                 totalTime += elapsedTime;
                 
-                // Calculate memory difference in MB (1024*1024 bytes)
-                // Note: Memory measurement in Java is complex due to the Garbage Collector.
                 long memoryUsedBytes = (memoryAfter - memoryBefore); 
                 double memoryUsedMB = memoryUsedBytes / (1024.0 * 1024.0);
                 totalMemory += memoryUsedBytes;
@@ -50,7 +44,6 @@ public class MatrixMultiplicationTest {
 
     private static long getUsedMemory() {
         Runtime runtime = Runtime.getRuntime();
-        // Request garbage collection for a slightly more accurate "before" state
         runtime.gc(); 
         return runtime.totalMemory() - runtime.freeMemory();
     }
